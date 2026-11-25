@@ -44,7 +44,14 @@ export class EventRoom {
    }else return fail('Unknown competition action.');
   }else if(b.resetVotes===true){if(busy)return fail('Finish or cancel the current round before resetting.');st.votes={};st.completed=[];st.voteEpoch=(st.voteEpoch||0)+1;await this.stopCompetition();}
   else if(Array.isArray(b.screens)&&b.screens.length===2&&b.screens.every(i=>Number.isInteger(i)&&i>=0&&i<st.slides.length)){
-   const changed=b.screens.some((v,i)=>v!==st.screens[i]);if(changed&&busy)return fail('Finish voting or cancel the countdown before changing slides.');st.screens=b.screens;if(changed)st.transition=Date.now()+650;if(st.competitionSlide&&!this.liveCompetition(st.competitionSlide))await this.stopCompetition();
+   const changed=b.screens.some((v,i)=>v!==st.screens[i]);
+   if(changed&&busy){
+    const confirmation=b.confirmRound;
+    if(!confirmation||confirmation.round!==st.active||confirmation.epoch!==st.voteEpoch||confirmation.slide!==st.competitionSlide||confirmation.phase!==(st.open?'voting':'countdown')||confirmation.timerEnd!==st.timerEnd)return fail('The round is active or has changed. Confirm the screen change again.');
+    const keepsHost=b.screens.some(i=>st.slides[i]?.id===st.competitionSlide);
+    if(!keepsHost){if(st.open&&!st.completed.includes(st.active))st.completed.push(st.active);await this.stopCompetition();}
+   }
+   st.screens=b.screens;if(changed)st.transition=Date.now()+650;if(st.competitionSlide&&!this.liveCompetition(st.competitionSlide))await this.stopCompetition();
   }else if(Object.keys(b).length)return fail('Use the guided competition controls.');
  }
  else return json({error:'Not found'},404);await this.save();return json(this.snapshot(true));}

@@ -71,3 +71,10 @@ The editor restores the slide rail scroll position after rendering and scrolls o
 - Existing manual save, slide drag ordering, logo dragging, numeric layout inputs, mobile preview and guided competition remain available.
 - Presentations can be renamed via the editor's existing title field and Save. Delete/duplicate whole presentations and authenticated audience access are not implemented. Existing audience URLs remain publicly accessible to anyone with the link.
 - Run `npm run check` and `node tests/library.mjs` for syntax and simulated storage checks. Physical browser and Cloudflare tests remain necessary.
+
+## V2.3 — Confirmed live navigation
+Screen controls remain usable during a round. A confirmation is required for a changed screen assignment. If at least one TV still shows the active competition slide, the round continues. Otherwise a countdown is cancelled (the group remains pending), or open voting is closed with received votes retained and the group marked completed. The server checks the confirmed round and phase; stale confirmations are rejected. Slide reorder arrows have been removed; drag-and-drop remains available.
+
+## V2.4
+- App highlight color: #ff5521 (RGB 255, 85, 33), in both themes. Darker orange text in light theme where necessary for contrast. Existing presentation artwork and saved slide colors are unchanged.
+- Slide rail contains only Duplicate and Delete; drag-and-drop ordering retained.
