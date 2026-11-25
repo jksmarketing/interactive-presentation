@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import worker,{EventRoom} from '../worker.js';
+class Store{map=new Map();async get(k){return Array.isArray(k)?new Map(k.map(x=>[x,this.map.get(x)])):this.map.get(k)}async put(k,v){this.map.set(k,v)}async delete(k){this.map.delete(k)}async transaction(fn){return fn(this)}async setAlarm(t){this.alarm=t}async deleteAlarm(){this.alarm=null}}
+const rooms=new Map(),env={ADMIN_PASSWORD:'test',EVENTS:{idFromName:x=>x,get(id){if(!rooms.has(id))rooms.set(id,new EventRoom({storage:new Store(),getWebSockets:()=>[]},env));return rooms.get(id)}}};
+async function call(path,body,auth=true){return worker.fetch(new Request('https://example.test/api/'+path,{method:body===undefined?'GET':'POST',headers:{Authorization:auth?'Bearer test':'','Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)})}),env)}
+async function data(path,body){const r=await call(path,body);assert.ok(r.ok,await r.clone().text());return r.json()}
+const original=await data('state');assert.equal(original.title,'JKS Christmas');assert.equal((await call('library',undefined,false)).status,401);assert.equal((await call('library',{title:'No'},false)).status,401);
+const {id}=await data('library',{title:'Annual meeting'});let newDeck=await data('state?p='+id);assert.equal(newDeck.title,'Annual meeting');assert.equal(newDeck.slides.length,1);assert.equal((await data('state')).title,'JKS Christmas');
+newDeck.title='Annual meeting 2027';newDeck.slides[0].title='Opening';await data('edit?p='+id,newDeck);const list=await data('library');assert.equal(list.length,2);assert.equal(list[1].title,'Annual meeting 2027');assert.equal((await data('state')).slides[0].title,original.slides[0].title);assert.equal((await data('state?p='+id)).slides[0].title,'Opening');
+assert.equal((await call('vote?p='+id,{round:'1',epoch:0,participant:'test-participant-1234',rating:7},false)).status,409);console.log('Library authentication, creation, rename, isolation, and legacy session checks passed.');
