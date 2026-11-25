@@ -36,3 +36,12 @@ In Editor, select a slide and set Properties > Slide type to Standard slide or 6
 
 ## V1.3 participant design
 Each slide supports separate mobile background, logo, title, message, voting question and text colour. Preview waiting, countdown, voting, submitted and results in the editor without casting votes. Save presentation to publish. The participant view follows the active competition slide, otherwise TV 1. Portrait uploads are resized to fit 1080 × 1920 and compressed to 250 KB where necessary; the existing 12 MB presentation limit remains. No storage migration or new Cloudflare bindings.
+
+## V1.4 — Join QR slide
+Add a slide, choose QR code / Join session, set title and subtitle, and save. The QR encodes the current website origin plus /join, and appears in TV and editor previews. Use the controller to show it on either or both TVs. No external QR service or new Cloudflare binding is needed. Existing slides are unchanged.
+
+## V1.5
+Slide types now immediately refresh the editor, show type-specific guidance, and preview competition stages on TV and phone. Preview only: start the real timer in Live control after saving.
+
+## V1.6 – Layout and scoring
+Per-slide TV text block position, width, alignment, font and subtitle size; independent TV/mobile logo width and X/Y position; mobile font, title/body size, alignment and vertical content position. Numeric voting is now 1–7, validated on the Worker, with averages and bars scaled to seven. Existing votes retain their numeric values: reset test votes before your real event. QR and timer positions remain fixed. Fonts are system fonts (availability varies by device). Save changes before presenting.
