@@ -54,3 +54,12 @@ The editor now has independent slide navigation and property panes, a fitted TV/
 Groups run in configured order. Display a competition slide, confirm Start for the next group, then wait for automatic voting. Confirm Close voting to complete the group. The next group is prepared but its timer does not start automatically. Navigation and editing are locked during active rounds. Restart or cancel is available only during countdown, with confirmation. Reveal results after all groups finish. Reset all votes is in Competition tools and clears progress. Existing votes are preserved; older completed rounds are inferred from saved votes (except the active countdown/voting round). Reset test votes before the real event. Refresh every connected browser after deployment because voting now includes the competition reset epoch.
 
 Backend state-machine tests used a simulated Durable Object storage and clock expiry; live browser and Cloudflare deployment are not verified. The group sequence is shared across competition slides.
+
+## V1.9 — Direct editing
+Drag a slide thumbnail above or below another to reorder it. The selected slide stays selected. Drag the logo on the TV or phone canvas; use its bottom-right handle to resize, or arrow keys to nudge its position. Save presentation to persist changes. Existing logo coordinates and slide IDs are reused; live screen assignments are preserved by ID when saving. Desktop mouse drag is supported for slide ordering; existing up/down buttons remain available.
+
+## V2.0
+Editable numeric typography and logo values, synchronized with existing sliders and direct logo manipulation. Numeric values commit on Enter or change; existing storage unchanged.
+
+### V2.1 — Slide navigation
+The editor restores the slide rail scroll position after rendering and scrolls only as needed to keep the selected thumbnail visible, including after slide reordering. No backend or storage changes.
