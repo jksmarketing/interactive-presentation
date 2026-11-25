@@ -1,4 +1,4 @@
-# JKS Events — v1
+# Interactive Presentation — consolidated update
 A responsive, single-event presentation and audience voting application, built for Cloudflare Workers with static assets and a SQLite-backed Durable Object. No separate server or D1 database required.
 
 ## Deploy from GitHub
@@ -10,14 +10,14 @@ A responsive, single-event presentation and audience voting application, built f
 
 ## Routes
 - `/admin`: edit slides, upload artwork and logos, adjust colours, title size and alignment; edit group names; save.
-- `/control`: choose a slide for each TV, apply together, sync both to the first selection, start/reset a 60-second timer, open/close votes and reveal rankings.
+- `/control`: choose a slide for each TV, apply together, sync both to the first selection, start/reset a 60-second timer with automatic voting, open/close votes and reveal rankings.
 - `/tv/1`, `/tv/2`: fullscreen using browser F11. Keep each URL open on its own TV browser or connected computer.
 - `/join`: mobile voting; generate a QR code for the final HTTPS URL using your preferred QR generator.
 
 ## Event rehearsal
 1. Save slides in /admin. Open both TV URLs and the controller in separate browsers/tabs.
 2. Choose slide 1 for TV 1 and slide 2 for TV 2; click Apply independent slides. Select slide 3 for TV 1 then click Sync both to TV 1 selection.
-3. Select a group, start timer, open voting manually after the presentation. Test from two independent phones. Close voting. Repeat for each group, then reveal results.
+3. Select a group, start presentation and verify voting opens automatically after 60 seconds. Test from two independent phones. Close voting. Repeat for each group, then reveal results.
 4. Check reconnection by refreshing both TVs and switching a phone between Wi-Fi and cellular. Test from the actual venue. Reset votes before the real event.
 
 ## Local development
@@ -25,8 +25,8 @@ Node 20+; run `npm install`, create a local `.dev.vars` file containing `ADMIN_P
 
 ## Scope and limitations
 - Single reusable event, not a multi-event dashboard. Slide editing uses title/subtitle fields and fixed logo positioning, not arbitrary drag-and-drop objects. Import a complete 1920x1080 design as background and leave title/subtitle blank for exact designs.
-- Images stored in event state: maximum 2 MB per uploaded image and ~12 MB combined JSON; compressed JPEG/WebP recommended. State broadcasts include slide images, so keep assets small and rehearse on venue Wi-Fi.
+- Images stored in event state: source images up to 50 MB are automatically optimised in the browser; ~12 MB combined JSON limit remains. State broadcasts include slide images, so keep assets small and rehearse on venue Wi-Fi.
 - Voting is anonymous and limited to one vote per browser identifier per group. Clearing site data or switching browsers can bypass this; no identity verification or own-group exclusion.
-- The timer does not automatically open voting. Results are hidden on public screens until manually revealed. TV transitions use a shared timestamp with approximate client clock offset; network and device latency can cause small differences.
+- The timer automatically opens voting; the administrator closes voting manually. Results are hidden on public screens until manually revealed. TV transitions use a shared timestamp with approximate client clock offset; network and device latency can cause small differences.
 - Public routes expose presentation content and are intended for nonconfidential event slides. Admin edits/control require a password. For stronger security, use additional access controls and rate limiting before broadly public deployment.
-- Syntax checked and backend smoke-tested with a mock storage runtime if indicated in delivery notes; real Cloudflare deployment and actual TVs require rehearsal.
+- JavaScript syntax checked; real Cloudflare deployment and actual TVs require rehearsal.
