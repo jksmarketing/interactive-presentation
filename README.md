@@ -45,3 +45,12 @@ Slide types now immediately refresh the editor, show type-specific guidance, and
 
 ## V1.6 – Layout and scoring
 Per-slide TV text block position, width, alignment, font and subtitle size; independent TV/mobile logo width and X/Y position; mobile font, title/body size, alignment and vertical content position. Numeric voting is now 1–7, validated on the Worker, with averages and bars scaled to seven. Existing votes retain their numeric values: reset test votes before your real event. QR and timer positions remain fixed. Fonts are system fonts (availability varies by device). Save changes before presenting.
+
+## V1.7 workspace
+The editor now has independent slide navigation and property panes, a fitted TV/phone/both preview, content/appearance/typography/logo tabs, and a top-toolbar competition groups dialog. The backend and storage schema are unchanged from V1.6. Save presentation to persist edits. Desktop workspace recommended.
+
+## V1.8 — Guided competition
+
+Groups run in configured order. Display a competition slide, confirm Start for the next group, then wait for automatic voting. Confirm Close voting to complete the group. The next group is prepared but its timer does not start automatically. Navigation and editing are locked during active rounds. Restart or cancel is available only during countdown, with confirmation. Reveal results after all groups finish. Reset all votes is in Competition tools and clears progress. Existing votes are preserved; older completed rounds are inferred from saved votes (except the active countdown/voting round). Reset test votes before the real event. Refresh every connected browser after deployment because voting now includes the competition reset epoch.
+
+Backend state-machine tests used a simulated Durable Object storage and clock expiry; live browser and Cloudflare deployment are not verified. The group sequence is shared across competition slides.
