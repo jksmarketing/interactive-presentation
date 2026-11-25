@@ -63,3 +63,11 @@ Editable numeric typography and logo values, synchronized with existing sliders 
 
 ### V2.1 — Slide navigation
 The editor restores the slide rail scroll position after rendering and scrolls only as needed to keep the selected thumbnail visible, including after slide reordering. No backend or storage changes.
+
+## V2.2 — JKS Interactive
+- New presentation library at `/library`. Existing presentation remains in the original `main` Durable Object and retains its original URLs. No data migration or new bindings required.
+- New presentations are created in independent Durable Objects. Their editor, controller, display links and QR join URLs include `?p=<presentation-id>`. Open the links from the selected deck's editor/controller, not from a different deck. Each deck has independent slides, groups, timers and votes.
+- Use the Light/Dark button in the application header. Preference is saved locally in the browser. Presentation artwork is unchanged.
+- Existing manual save, slide drag ordering, logo dragging, numeric layout inputs, mobile preview and guided competition remain available.
+- Presentations can be renamed via the editor's existing title field and Save. Delete/duplicate whole presentations and authenticated audience access are not implemented. Existing audience URLs remain publicly accessible to anyone with the link.
+- Run `npm run check` and `node tests/library.mjs` for syntax and simulated storage checks. Physical browser and Cloudflare tests remain necessary.
