@@ -56,3 +56,6 @@ Use an isolated staging Worker or a rehearsal presentation. Do not perform test 
 ## Rollback and data
 
 Retain the V2.4 deployment/commit and original ZIP. This upgrade adds new persistent fields and slide types. A code-only rollback after use of new features is not a guaranteed data rollback. Export design and score backups before experimentation. The recommended safest path is a separate staging Worker first, keeping production unchanged. Do not delete the Durable Object or change its migration binding. If something fails, capture the exact browser console, Worker log and steps; avoid resetting live votes to troubleshoot.
+
+## V3.0.2 corrective release
+See `V3.0.2-VERIFICATION.md` for the new theme, controller and slide-gallery acceptance checks. Actual browser testing remains blocked in the development environment.

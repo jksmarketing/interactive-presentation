@@ -1,10 +1,10 @@
 
-> interactive-presentation@3.0.0 test
-> npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs
+> interactive-presentation@3.0.2 test
+> npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs && node tests/participant.mjs && node tests/theme.mjs
 
 
-> interactive-presentation@3.0.0 check
-> node --check worker.js && node --check public/app.js && node --check public/qr.js
+> interactive-presentation@3.0.2 check
+> node --check worker.js && node --check public/app.js && node --check public/qr.js && node --check public/presentation-theme.js
 
 Library authentication, creation, rename, isolation, and legacy session checks passed.
 Confirmed navigation, cancellation, vote preservation and stale confirmation checks passed.
@@ -12,3 +12,7 @@ Upgrade tests passed: revision conflicts, notes privacy, presence, rehearsal, im
 Activity tests passed: poll/rating/word cloud/Q&A validation, single response, privacy, reveal, navigation, reopening, standalone countdown and published results.
 Legacy migration, 80 simultaneous simulated vote requests, public revision, round retry, shared video timestamp, stale-screen guard and reload tests passed.
 Static rendering checks passed for admin (TV/mobile), control, TV, join and library across all supported slide types. No browser DOM interaction claimed.
+Gallery and theme inspector static markup checks passed.
+Gallery action checks passed: selected card creates a themed poll; Change type retains the slide ID and produces a QR slide. Dialog interaction simulated.
+Participant checks passed: custom mobile design, phase rendering, disabled/duplicate/stale submission, saved receipt, next group, offline/recovery, failed vote, activity scoping and shared preview. VM DOM stubs, not real browser.
+Theme checks passed: all design categories, legacy preservation, new-slide inheritance, field override, relinking, compact storage, public resolution, reload, duplication, import/export, new deck, invalid links, QR default placement.
