@@ -6,10 +6,11 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "check": "node --check worker.js && node --check public/app.js && node --check public/qr.js && node --check public/presentation-theme.js",
-    "test": "npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs && node tests/participant.mjs && node tests/theme.mjs && node tests/phone-modes.mjs"
+    "test": "npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs && node tests/participant.mjs && node tests/theme.mjs && node tests/phone-modes.mjs && node tests/multi-competition.mjs",
+    "test:browser": "python tests/mobile-dom.py"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
   },
-  "version": "3.0.3"
+  "version": "3.0.6"
 }

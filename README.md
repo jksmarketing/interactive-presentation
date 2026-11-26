@@ -1,3 +1,15 @@
+# JKS Interactive V3.0.6 — mobile and competition workflow
+
+See [V3.0.6-VERIFICATION.md](V3.0.6-VERIFICATION.md) for changes, tests and deployment checklist.
+
+**Upgrade:** replace the repository root with this archive's contents (not a nested folder). Keep the Worker name, EVENTS Durable Object binding and ADMIN_PASSWORD unchanged. Rehearse with a duplicate first and export a design backup. Existing competition scores remain in their Durable Object; presentation exports deliberately omit votes.
+
+**Groups:** select a competition slide, then click Competition groups. Select the competition in the dialog. Existing competition groups initially inherit the legacy roster; first edit makes an independent copy. New competitions start with a copied roster. Each competition has a separate rating scale, duration, results and CSV export.
+
+**Results:** add a Results slide and choose Competition to display in its Content properties, or select the source in Live control. Publish after all groups in that competition have finished. Two result slides can publish different competitions. Private scores are under Scores in Live control.
+
+---
+
 # JKS Interactive — V3.0.3 (candidate)
 
 A Cloudflare Worker with Durable Object storage and a static browser application for dual-screen presentations, interactive slides and audience voting. The Worker/project name is still `interactive-presentation`. JKS accent: `#ff5521`.
