@@ -1,0 +1,7 @@
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import worker,{EventRoom} from '../worker.js';
+class Store{map=new Map();async get(k){return Array.isArray(k)?new Map(k.map(x=>[x,this.map.get(x)])):this.map.get(k)}async put(k,v){this.map.set(k,v)}async delete(k){this.map.delete(k)}async transaction(fn){return fn(this)}async setAlarm(t){this.alarm=t}async deleteAlarm(){this.alarm=null}}
+const rooms=new Map(),env={ADMIN_PASSWORD:'test',EVENTS:{idFromName:x=>x,get(id){if(!rooms.has(id))rooms.set(id,new EventRoom({storage:new Store(),getWebSockets:()=>[]},env));return rooms.get(id)}}};
+const server=createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost:8765');if(url.pathname.startsWith('/api/')){if(url.pathname.endsWith('/socket')){res.writeHead(426);res.end();return;}const chunks=[];for await(const c of req)chunks.push(c);const body=Buffer.concat(chunks);const r=await worker.fetch(new Request(url,{method:req.method,headers:req.headers,...(body.length?{body}:{})}),env);res.writeHead(r.status,Object.fromEntries(r.headers));res.end(Buffer.from(await r.arrayBuffer()));}else{const path=url.pathname.endsWith('.js')?url.pathname.slice(1):'index.html';const data=await readFile(resolve('public',path));res.writeHead(200,{'Content-Type':path.endsWith('.js')?'text/javascript':'text/html'});res.end(data);}}catch(e){console.error(e);res.writeHead(500);res.end(JSON.stringify({error:e.message}));}});server.listen(8765,'127.0.0.1');
