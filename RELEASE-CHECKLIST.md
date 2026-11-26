@@ -59,3 +59,6 @@ Retain the V2.4 deployment/commit and original ZIP. This upgrade adds new persis
 
 ## V3.0.2 corrective release
 See `V3.0.2-VERIFICATION.md` for the new theme, controller and slide-gallery acceptance checks. Actual browser testing remains blocked in the development environment.
+
+## V3.0.3 participant-screen additions
+Follow the staging acceptance steps in `V3.0.3-PHONE-SCREENS.md`. Do not treat the static tests as device validation.

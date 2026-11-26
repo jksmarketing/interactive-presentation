@@ -1,4 +1,4 @@
-# JKS Interactive — V3.0.2 (candidate)
+# JKS Interactive — V3.0.3 (candidate)
 
 A Cloudflare Worker with Durable Object storage and a static browser application for dual-screen presentations, interactive slides and audience voting. The Worker/project name is still `interactive-presentation`. JKS accent: `#ff5521`.
 
@@ -9,10 +9,18 @@ This is a substantial upgrade to V2.4. Read `RELEASE-CHECKLIST.md` before using 
 - Keep the existing V2.4 Git commit and ZIP. Do not delete or recreate the production Durable Object. Code rollback after using new slide types or new state is not a guaranteed data rollback.
 - Prefer testing first on a separate staging Worker (change `name` in a staging copy of `wrangler.jsonc` only). It will have separate storage. Configure its own `ADMIN_PASSWORD` secret, then test the checklist. Do not copy the secret into GitHub.
 - For production, use the original `wrangler.jsonc` from this package unchanged. Replace repository contents (including `public/`, `worker.js`, `package.json`, `tests/`, and `tools/`), commit and deploy with the existing GitHub integration. The Worker name, `EVENTS` binding, `EventRoom` class and migration tag are unchanged. The existing session uses the same storage namespace and `main` room name. Existing presentations should load without resetting their designs or votes; simulated migration was tested.
-- Refresh **all** editor, controller, TV and participant browsers with Ctrl+F5 after deployment. Do not operate a mixture of old and V3.0.2 clients.
+- Refresh **all** editor, controller, TV and participant browsers with Ctrl+F5 after deployment. Do not operate a mixture of old and V3.0.3 clients.
 - After loading the existing presentation, export a JSON design backup from the editor or library. This is a design backup (not a backup of live scores). Export the competition results separately as CSV when needed.
 
 Cloudflare build command: `npm install` (or existing equivalent). Deploy command: `npx wrangler deploy`. Repository root: `/`. Keep `ADMIN_PASSWORD` configured as a Worker secret. No additional R2/D1 binding is required.
+
+## New in V3.0.3: independent participant screens
+
+Select a slide in the editor, choose **Phone · 9:16** (or **Both → Edit phone**), then open **Content → What should participants see?**. Choose Automatic, Waiting screen, Share join QR code, Custom information, or Games finished. Optional phone screen headline and message are independent of TV text and of the competition mobile title/question. Use **Configured phone screen** in the preview phase selector to view the idle screen on an interactive slide; choose the other phases to preview interaction states. Changes are saved by the existing save/autosave flow. The TV slide type and design are unchanged.
+
+Automatic shows the join QR on a Join session slide, and otherwise uses the original waiting/interaction behavior. Explicit idle modes override non-active content; active countdowns and response collection always take precedence. Live control → participant preview → Follows TV 1/TV 2 chooses the idle phone source when TVs differ. Use **Finish games** in Live control to show the closing screen persistently, including for new arrivals. This does not change the TVs or votes. It is rejected if a round/activity is open. Use **Reopen games** to clear it; a deliberately started new round/activity also clears it. This is explicit rather than inferring the end from one competition, because other games may follow. A slide with Games finished mode still shows that screen when followed, even after the global end flag is cleared. The global closing screen uses the current phone background, with default closing copy unless the followed slide is set to Games finished.
+
+See `V3.0.3-PHONE-SCREENS.md` for focused verification and acceptance steps. The existing restriction on saving during an active round remains unchanged in this update.
 
 ## Routes
 
