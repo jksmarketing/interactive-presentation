@@ -1,0 +1,14 @@
+
+> interactive-presentation@3.0.0 test
+> npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs
+
+
+> interactive-presentation@3.0.0 check
+> node --check worker.js && node --check public/app.js && node --check public/qr.js
+
+Library authentication, creation, rename, isolation, and legacy session checks passed.
+Confirmed navigation, cancellation, vote preservation and stale confirmation checks passed.
+Upgrade tests passed: revision conflicts, notes privacy, presence, rehearsal, import/export, archive/restore, pause/resume, auto-close, 1–7 and 1–10 voting, duplicate rejection, independent contests, skip, blackout, storage reload.
+Activity tests passed: poll/rating/word cloud/Q&A validation, single response, privacy, reveal, navigation, reopening, standalone countdown and published results.
+Legacy migration, 80 simultaneous simulated vote requests, public revision, round retry, shared video timestamp, stale-screen guard and reload tests passed.
+Static rendering checks passed for admin (TV/mobile), control, TV, join and library across all supported slide types. No browser DOM interaction claimed.

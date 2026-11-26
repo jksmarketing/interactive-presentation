@@ -1,80 +1,66 @@
-# Interactive Presentation — consolidated update
-A responsive, single-event presentation and audience voting application, built for Cloudflare Workers with static assets and a SQLite-backed Durable Object. No separate server or D1 database required.
+# JKS Interactive — V3.0 (candidate)
 
-## Deploy from GitHub
-1. Create a private GitHub repository and upload the **contents** of this folder (wrangler.jsonc must be at the repository root).
-2. In Cloudflare, open Workers & Pages, create a Worker using the Git repository integration, and select the repository. This is a **Worker**, not a static Pages project.
-3. Use `npm install` as the build command if requested, and `npx wrangler deploy` as the deploy command. Root directory: repository root. The Durable Object binding and migration are declared in wrangler.jsonc.
-4. In the deployed Worker's Settings > Variables and Secrets, add a secret named `ADMIN_PASSWORD` with a long unique password. Alternatively run `npx wrangler secret put ADMIN_PASSWORD` locally. Never commit the password.
-5. Open the Worker URL or add a custom domain in Settings > Domains & Routes. Visit /admin and sign in.
+A Cloudflare Worker with Durable Object storage and a static browser application for dual-screen presentations, interactive slides and audience voting. The Worker/project name is still `interactive-presentation`. JKS accent: `#ff5521`.
+
+## Upgrade safely
+
+This is a substantial upgrade to V2.4. Read `RELEASE-CHECKLIST.md` before using it for a live event. All included Node test suites passed; a full real-browser/hardware run was blocked in the development environment. **Treat this as a release candidate until you rehearse on your own devices.**
+
+- Keep the existing V2.4 Git commit and ZIP. Do not delete or recreate the production Durable Object. Code rollback after using new slide types or new state is not a guaranteed data rollback.
+- Prefer testing first on a separate staging Worker (change `name` in a staging copy of `wrangler.jsonc` only). It will have separate storage. Configure its own `ADMIN_PASSWORD` secret, then test the checklist. Do not copy the secret into GitHub.
+- For production, use the original `wrangler.jsonc` from this package unchanged. Replace repository contents (including `public/`, `worker.js`, `package.json`, `tests/`, and `tools/`), commit and deploy with the existing GitHub integration. The Worker name, `EVENTS` binding, `EventRoom` class and migration tag are unchanged. The existing session uses the same storage namespace and `main` room name. Existing presentations should load without resetting their designs or votes; simulated migration was tested.
+- Refresh **all** editor, controller, TV and participant browsers with Ctrl+F5 after deployment. Do not operate a mixture of V2.4 and V3.0 clients.
+- After loading the existing presentation, export a JSON design backup from the editor or library. This is a design backup (not a backup of live scores). Export the competition results separately as CSV when needed.
+
+Cloudflare build command: `npm install` (or existing equivalent). Deploy command: `npx wrangler deploy`. Repository root: `/`. Keep `ADMIN_PASSWORD` configured as a Worker secret. No additional R2/D1 binding is required.
 
 ## Routes
-- `/admin`: edit slides, upload artwork and logos, adjust colours, title size and alignment; edit group names; save.
-- `/control`: choose a slide for each TV, apply together, sync both to the first selection, start/reset a 60-second timer with automatic voting, open/close votes and reveal rankings.
-- `/tv/1`, `/tv/2`: fullscreen using browser F11. Keep each URL open on its own TV browser or connected computer.
-- `/join`: mobile voting; generate a QR code for the final HTTPS URL using your preferred QR generator.
 
-## Event rehearsal
-1. Save slides in /admin. Open both TV URLs and the controller in separate browsers/tabs.
-2. Choose slide 1 for TV 1 and slide 2 for TV 2; click Apply independent slides. Select slide 3 for TV 1 then click Sync both to TV 1 selection.
-3. Select a group, start presentation and verify voting opens automatically after 60 seconds. Test from two independent phones. Close voting. Repeat for each group, then reveal results.
-4. Check reconnection by refreshing both TVs and switching a phone between Wi-Fi and cellular. Test from the actual venue. Reset votes before the real event.
+| Route | Purpose |
+|---|---|
+| `/library` | Manage presentations, search, sort, duplicate, archive/restore, import/export, rehearsal copies |
+| `/admin` | Edit original presentation (`main`) |
+| `/control` | Live controller |
+| `/tv/1`, `/tv/2` | Display outputs |
+| `/join` | Participant interface |
 
-## Local development
-Node 20+; run `npm install`, create a local `.dev.vars` file containing `ADMIN_PASSWORD=your-local-password`, then `npm run dev`. Do not commit `.dev.vars`. `npm run check` checks JS syntax.
+For another presentation, append `?p=<presentation-id>` to its routes. The library provides correct links automatically. QR codes are generated locally from the session's actual join URL. The same link is used throughout an event.
 
-## Scope and limitations
-- Single reusable event, not a multi-event dashboard. Slide editing uses title/subtitle fields and fixed logo positioning, not arbitrary drag-and-drop objects. Import a complete 1920x1080 design as background and leave title/subtitle blank for exact designs.
-- Images stored in event state: source images up to 50 MB are automatically optimised in the browser; ~12 MB combined JSON limit remains. State broadcasts include slide images, so keep assets small and rehearse on venue Wi-Fi.
-- Voting is anonymous and limited to one vote per browser identifier per group. Clearing site data or switching browsers can bypass this; no identity verification or own-group exclusion.
-- The timer automatically opens voting; the administrator closes voting manually. Results are hidden on public screens until manually revealed. TV transitions use a shared timestamp with approximate client clock offset; network and device latency can cause small differences.
-- Public routes expose presentation content and are intended for nonconfidential event slides. Admin edits/control require a password. For stronger security, use additional access controls and rate limiting before broadly public deployment.
-- JavaScript syntax checked; real Cloudflare deployment and actual TVs require rehearsal.
+## Workflow
 
-## Version 1.2 — slide-specific competition
-In Editor, select a slide and set Properties > Slide type to Standard slide or 60-second competition / voting, then save. Existing slides with “60 Sekunden” in their titles are initially recognised as competition slides; other existing slides default to Standard. In Live control, apply the desired slides to the TVs, choose the displayed competition slide and group, and start the presentation. Voting opens automatically after 60 seconds. Only TVs displaying the selected competition slide show its timer/voting/results overlay. End competition / return to slide clears the overlay immediately. Navigating both TVs away from that competition slide closes voting and cancels the timer automatically; if one TV remains on it, the competition stays active for that TV. Votes remain stored until explicitly reset. All competition slides share the existing event-wide groups and results. Slide selections still require Apply/Sync. Syntax and simulated backend transitions tested; physical TVs and live Cloudflare deployment not tested.
+1. Open Presentations. Edit JKS Christmas or create a new deck. Use Duplicate to reuse a design, Rehearse to create an isolated copy with empty vote history, or Archive to hide a presentation from the active library without deleting its session.
+2. In the editor, use the fixed slide sidebar, TV/phone/Both views and right-side tabs. Drag slides to reorder. Drag the logo or text block on the canvas; double-click title/subtitle to edit. Use numeric inputs for exact positions. The Elements tab adds independent text/image layers on the TV, including layer order, lock, visibility, copy/paste and position/size. The phone has its own background, logo, typography and content position. Extra free-form mobile layers are not supported.
+3. Add a slide from the type gallery. Configure content and, for an interactive type, its prompt/options/duration as applicable. QR position and size are editable. Set a design default from a slide with Design; optionally apply selected properties to all slides (confirmation required). New slides inherit those copied defaults. Existing slides can be customised independently. Media library reuses uploaded images from the current presentation; WOFF2 fonts can be uploaded if you have permission to embed them.
+4. Edits autosave after a short delay. Undo/Redo are local to the editing session, with limited history; explicit Save and JSON backup export remain available. On conflicting edits, the server rejects the stale save rather than overwriting another editor's work. Export the draft and reload. Local IndexedDB recovery is best-effort; do not rely on it as your only backup. Keyboard shortcuts: Ctrl/Cmd+S, Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y, Ctrl/Cmd+D, Delete (when not typing). Logo dragging retains its existing resize handle and numeric fields.
+5. Use Present to open the setup dialog and display links. In Live control, set the timeline target to Both TVs, TV 1 or TV 2; click a thumbnail to send it live. Previous/Next move both together. The dropdowns remain for explicit independent selection and Apply. The controller displays heartbeat-based connection estimates and the number of recently active browser IDs, not a verified headcount. The TV browser can toggle fullscreen with F. Blackout hides both TVs without stopping the round; Restore returns them to the live slide. Presenter notes are private to the authenticated controller.
+6. For a competition slide, show it on a TV, then start the next group. Default duration is 60 seconds, default rating maximum 7. Countdown opens voting automatically; close manually by default or configure an automatic close. The controller can pause/resume, restart a running timer, cancel, skip a group or explicitly redo a completed group (deletes that group's votes only). Leaving an active round requires confirmation; the server checks that the round hasn't changed. If the competition stays visible on the other TV, the round continues. Otherwise leaving a countdown cancels it, leaving voting closes it and keeps received votes. Separate competition slides keep separate vote ledgers and share the presentation's group names/order. Only one competition/activity can accept responses at a time. The public leaderboard stays hidden until you reveal or publish it. A Results slide displays the last explicitly published competition scores. Export the currently selected competition's scores using CSV. The controller sound button enables a short local timer-expiry tone after user interaction.
+7. Poll, Rating, Word cloud, Q&A: display the slide, open responses, close responses and reveal results. Each browser ID can submit once per activity; reset to repeat with fresh responses. Q&A results are unmoderated; review privately before revealing. Word cloud aggregates case-insensitive exact responses, not semantic variants. Standalone countdown has no voting. Audience responses are browser-ID based and do not verify the identity of guests.
+8. Linked video (experimental): enter a direct HTTPS MP4/WebM URL you have permission to display. It is played muted, full-screen on the TVs, using a shared timestamp and periodic drift correction. Browser support, network buffering, autoplay and exact synchronisation are not guaranteed. Test on the actual displays. A Restart video control resets its shared start. Instant/fade/slide entry transitions are available.
 
-## V1.3 participant design
-Each slide supports separate mobile background, logo, title, message, voting question and text colour. Preview waiting, countdown, voting, submitted and results in the editor without casting votes. Save presentation to publish. The participant view follows the active competition slide, otherwise TV 1. Portrait uploads are resized to fit 1080 × 1920 and compressed to 250 KB where necessary; the existing 12 MB presentation limit remains. No storage migration or new Cloudflare bindings.
+## Stream Deck (experimental, Windows)
 
-## V1.4 — Join QR slide
-Add a slide, choose QR code / Join session, set title and subtitle, and save. The QR encodes the current website origin plus /join, and appears in TV and editor previews. Use the controller to show it on either or both TVs. No external QR service or new Cloudflare binding is needed. Existing slides are unchanged.
+The optional `tools/stream-deck.ps1` script calls the same authenticated control API. Copy the script to a local folder, then run in Windows PowerShell:
 
-## V1.5
-Slide types now immediately refresh the editor, show type-specific guidance, and preview competition stages on TV and phone. Preview only: start the real timer in Live control after saving.
+```powershell
+powershell.exe -NoProfile -File "C:\JKS\stream-deck.ps1" -Configure
+```
 
-## V1.6 – Layout and scoring
-Per-slide TV text block position, width, alignment, font and subtitle size; independent TV/mobile logo width and X/Y position; mobile font, title/body size, alignment and vertical content position. Numeric voting is now 1–7, validated on the Worker, with averages and bars scaled to seven. Existing votes retain their numeric values: reset test votes before your real event. QR and timer positions remain fixed. Fonts are system fonts (availability varies by device). Save changes before presenting.
+Enter your actual HTTPS `/control` link (including `?p=` for a non-main deck) and administrator password. It stores the credentials encrypted by Windows DPAPI for the current Windows user in `%LOCALAPPDATA%\JKS-Interactive\stream-deck.xml`. Keep that file private. Make Windows shortcuts that invoke:
 
-## V1.7 workspace
-The editor now has independent slide navigation and property panes, a fitted TV/phone/both preview, content/appearance/typography/logo tabs, and a top-toolbar competition groups dialog. The backend and storage schema are unchanged from V1.6. Save presentation to persist edits. Desktop workspace recommended.
+```powershell
+powershell.exe -NoProfile -File "C:\JKS\stream-deck.ps1" -Action Next
+```
 
-## V1.8 — Guided competition
+Actions: `Next`, `Previous`, `Blackout`, `Restore`, `Start`, `Close`, `Pause`, `Resume`. Bind the shortcuts with a Stream Deck Open/launcher action. The script refuses next/previous while an activity is active; use the browser for confirmation and overrides. PowerShell and Stream Deck hardware were not available for testing here. Follow your organisation's script execution policies; don't disable security policies just to run this launcher.
 
-Groups run in configured order. Display a competition slide, confirm Start for the next group, then wait for automatic voting. Confirm Close voting to complete the group. The next group is prepared but its timer does not start automatically. Navigation and editing are locked during active rounds. Restart or cancel is available only during countdown, with confirmation. Reveal results after all groups finish. Reset all votes is in Competition tools and clears progress. Existing votes are preserved; older completed rounds are inferred from saved votes (except the active countdown/voting round). Reset test votes before the real event. Refresh every connected browser after deployment because voting now includes the competition reset epoch.
+## Storage, limits and security
 
-Backend state-machine tests used a simulated Durable Object storage and clock expiry; live browser and Cloudflare deployment are not verified. The group sequence is shared across competition slides.
+The original compressed inline image storage model is retained to avoid a disruptive storage migration. Per-presentation edit payload limit: 12,000,000 JSON characters (roughly 12 MB for ASCII, including base64 assets and fonts). Source image upload limit: 50 MB, optimised before saving. TV background up to 1920×1080, phone background up to 1080×1920; logos use smaller targets. Up to 100 slides, 100 groups, 30 additional TV layers per slide, 8 uploaded WOFF2 fonts (1 MB source each). Fonts are included in the presentation storage limit. Media reuse copies data, so it does not remove that overall limit. Large projects may need R2/object storage in a later migration. No sensitive/confidential information should be placed in public slides or questions; anyone with a session link can access its audience content. The admin secret is required for editing/control/library/private result APIs. Guest presence is approximate, and one-vote-per-browser is not identity verification.
 
-## V1.9 — Direct editing
-Drag a slide thumbnail above or below another to reorder it. The selected slide stays selected. Drag the logo on the TV or phone canvas; use its bottom-right handle to resize, or arrow keys to nudge its position. Save presentation to persist changes. Existing logo coordinates and slide IDs are reused; live screen assignments are preserved by ID when saving. Desktop mouse drag is supported for slide ordering; existing up/down buttons remain available.
+The server sends lightweight WebSocket invalidations and clients fetch updates. Polling remains a fallback. Vote-only changes do not cause public displays to refetch large images; the controller still receives private vote counts through polling. These changes were tested using simulated storage, not a Cloudflare production load test.
 
-## V2.0
-Editable numeric typography and logo values, synchronized with existing sliders and direct logo manipulation. Numeric values commit on Enter or change; existing storage unchanged.
+## Local verification
 
-### V2.1 — Slide navigation
-The editor restores the slide rail scroll position after rendering and scrolls only as needed to keep the selected thumbnail visible, including after slide reordering. No backend or storage changes.
+Node 22 was used in development. `npm test` runs syntax checks and six Node suites (original library/navigation, upgrade, activities, migration/80 simulated votes, static rendering). No Wrangler install is needed for those tests. For Cloudflare local development, install dependencies and use `npm run dev`; configure `ADMIN_PASSWORD` in a local `.dev.vars` file that is not committed. For the optional actual-browser test, install Playwright Python (`pip install playwright`, then `python -m playwright install chromium`) and run `python tests/browser.py`. This launches a disposable in-memory local server; it does not touch your real deployment. The test was attempted here but browser navigation was blocked by the environment. The supplied test is a starting smoke test, not a claim of full UI coverage. The local server is deliberately not a real Durable Object or WebSocket emulator.
 
-## V2.2 — JKS Interactive
-- New presentation library at `/library`. Existing presentation remains in the original `main` Durable Object and retains its original URLs. No data migration or new bindings required.
-- New presentations are created in independent Durable Objects. Their editor, controller, display links and QR join URLs include `?p=<presentation-id>`. Open the links from the selected deck's editor/controller, not from a different deck. Each deck has independent slides, groups, timers and votes.
-- Use the Light/Dark button in the application header. Preference is saved locally in the browser. Presentation artwork is unchanged.
-- Existing manual save, slide drag ordering, logo dragging, numeric layout inputs, mobile preview and guided competition remain available.
-- Presentations can be renamed via the editor's existing title field and Save. Delete/duplicate whole presentations and authenticated audience access are not implemented. Existing audience URLs remain publicly accessible to anyone with the link.
-- Run `npm run check` and `node tests/library.mjs` for syntax and simulated storage checks. Physical browser and Cloudflare tests remain necessary.
-
-## V2.3 — Confirmed live navigation
-Screen controls remain usable during a round. A confirmation is required for a changed screen assignment. If at least one TV still shows the active competition slide, the round continues. Otherwise a countdown is cancelled (the group remains pending), or open voting is closed with received votes retained and the group marked completed. The server checks the confirmed round and phase; stale confirmations are rejected. Slide reorder arrows have been removed; drag-and-drop remains available.
-
-## V2.4
-- App highlight color: #ff5521 (RGB 255, 85, 33), in both themes. Darker orange text in light theme where necessary for contrast. Existing presentation artwork and saved slide colors are unchanged.
-- Slide rail contains only Duplicate and Delete; drag-and-drop ordering retained.
+See `RELEASE-CHECKLIST.md` for the completed checks, partial implementations and physical-device test plan. Keep the old deployment available until the candidate passes that rehearsal.
