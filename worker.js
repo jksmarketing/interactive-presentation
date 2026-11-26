@@ -28,7 +28,8 @@ export class EventRoom {
  liveCompetition(id){return !!id&&this.state.screens.some(i=>{const s=this.state.slides[i];return s?.id===id&&s.type==='competition';});}
  invalidatePublished(id){const st=this.state;for(const [key,p] of Object.entries(st.publishedBySlide||{}))if(p.source===id)delete st.publishedBySlide[key];if(st.publishedResults?.source===id||!st.publishedResults?.source)st.publishedResults=null;}
  async stopCompetition(){Object.assign(this.state,{competitionSlide:null,active:null,open:false,timerEnd:0,pausedRemaining:0,voteEnd:0,autoVote:false,showResults:false});await this.ctx.storage.deleteAlarm();}
- async finishTimer(){const st=this.state;if(st.interaction?.open&&st.interaction.end&&Date.now()>=st.interaction.end){st.interaction.open=false;st.interaction.end=0;await this.save();}if(st.competitionSlide&&!this.liveCompetition(st.competitionSlide)){await this.stopCompetition();await this.save();return;}if(st.autoVote&&st.timerEnd&&Date.now()>=st.timerEnd){st.timerEnd=0;st.autoVote=false;st.open=!!st.active;const duration=this.voteDuration(st.competitionSlide);st.voteEnd=st.open&&duration?Date.now()+duration*1000:0;if(st.voteEnd)await this.ctx.storage.setAlarm(st.voteEnd);await this.save();}if(st.open&&st.voteEnd&&Date.now()>=st.voteEnd){await this.closeRound();await this.save();}}
+ async finishTimer(){const st=this.state;if(st.interaction?.open&&st.interaction.end&&Date.now()>=st.interaction.end){st.interaction.open=false;st.interaction.end=0;await this.save();}if(st.competitionSlide&&!this.liveCompetition(st.competitionSlide)){await this.stopCompetition();await this.save();return;}if(st.autoVote&&st.timerEnd&&Date.now()>=st.timerEnd){await this.openRoundVoting();await this.save();}if(st.open&&st.voteEnd&&Date.now()>=st.voteEnd){await this.closeRound();await this.save();}}
+ async openRoundVoting(){const st=this.state;Object.assign(st,{timerEnd:0,pausedRemaining:0,autoVote:false,open:!!st.active});const duration=this.voteDuration(st.competitionSlide);st.voteEnd=st.open&&duration?Date.now()+duration*1000:0;if(st.voteEnd)await this.ctx.storage.setAlarm(st.voteEnd);else await this.ctx.storage.deleteAlarm();}
  async closeRound(){const st=this.state;if(st.active&&!st.completed.includes(st.active))st.completed.push(st.active);Object.assign(st,{open:false,active:null,timerEnd:0,pausedRemaining:0,voteEnd:0,autoVote:false});await this.ctx.storage.deleteAlarm();}
  serial(fn){const p=this.queue.then(fn);this.queue=p.catch(()=>{this.state=null;});return p;}
  async alarm(){return this.serial(()=>this.runAlarm());}
@@ -57,6 +58,9 @@ export class EventRoom {
    if(b.guided==='select'){if(busy||!this.liveCompetition(b.slide))return fail('Cannot switch the competition during a round.');await this.stopCompetition();this.selectLedger(b.slide);st.competitionSlide=b.slide;}else if(b.guided==='start'){
     if(busy||!next||b.round!==next.id||!this.liveCompetition(b.slide)||st.ledgerSlide!==b.slide)return fail('Start is no longer available for this group.');
     Object.assign(st,{phoneEnded:false,competitionSlide:b.slide,active:next.id,open:false,timerEnd:Date.now()+this.duration(b.slide)*1000,pausedRemaining:0,voteEnd:0,autoVote:true,showResults:false});await this.ctx.storage.setAlarm(st.timerEnd);
+   }else if(b.guided==='open-voting'){
+    if(st.open||!st.active||!(st.timerEnd||st.pausedRemaining)||b.round!==st.active||b.slide!==st.competitionSlide||st.ledgerSlide!==b.slide||!this.liveCompetition(b.slide)||b.timerEnd!==st.timerEnd||b.pausedRemaining!==(st.pausedRemaining||0))return fail('Countdown changed or voting is already open. Check the current round.');
+    await this.openRoundVoting();
    }else if(b.guided==='close'){
     if(!st.open||b.round!==st.active||b.slide!==st.competitionSlide)return fail('This voting round is no longer active.');
     await this.closeRound();

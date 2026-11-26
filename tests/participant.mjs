@@ -33,3 +33,5 @@ run("state.competitionSlide='b';state.active='2';state.timerEnd=Date.now()+42000
 run("state.open=false;state.active=null;state.phoneSource=0;state.screens=[0,2];state.interaction={slide:'c',token:'new-token',open:true};state.slides[2].phoneMode='finished';render()");assert.match(app.innerHTML,/data-phone-phase="voting"/);assert.match(app.innerHTML,/data-token="new-token"/);
 run("state.interaction.open=false;render()");assert.match(app.innerHTML,/data-phone-phase="content"/);
 console.log('Independent phone mode checks passed: waiting, QR sharing, automatic join, finished, custom content, persistent end priority, TV source and active competition/activity precedence.');
+
+run("state.interaction=null;state.screens=[1,1];state.competitionSlide='b';state.active='1';state.voteEpoch=99;state.open=true;state.ratingMax=7;render()");assert.match(app.innerHTML,/1 · Niedrig/);assert.match(app.innerHTML,/7 · Hoch/);run("state.ratingMax=10;render()");assert.match(app.innerHTML,/10 · Hoch/);

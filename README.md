@@ -88,3 +88,6 @@ See `RELEASE-CHECKLIST.md` for the completed checks, partial implementations and
 
 ## 3.0.1 participant update
 See [PARTICIPANT-UPDATE.md](PARTICIPANT-UPDATE.md) for the changes, verification and live rehearsal checklist. This patch changes the audience frontend without changing the Worker or data format.
+
+## V3.0.7
+Competition rating endpoints are numbered. During a running or paused countdown, Live control offers **Open voting now**, with a group-specific confirmation. See V3.0.7-CHANGES.md.
