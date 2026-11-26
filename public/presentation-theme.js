@@ -1,0 +1,24 @@
+// Shared, allow-listed presentation design model. Old slides are deliberately unlinked.
+export const themeDefaults=Object.freeze({
+ bg:'',background:'#39291e',logo:'',logoX:85,logoY:12,logoSize:19,
+ font:'Georgia',subtitleFont:'Georgia',color:'#f5d69a',size:64,subtitleSize:3,align:'center',textX:50,textY:50,textWidth:90,
+ mobileBg:'',mobileBackground:'#33281f',mobileLogo:'',mobileLogoX:50,mobileLogoY:9,mobileLogoSize:50,
+ mobileFont:'System',mobileBodyFont:'System',mobileColor:'#ffffff',mobileTitleSize:23,mobileTextSize:15,mobileAlign:'center',mobileContentY:50,mobileContentWidth:100,
+ voteAccent:'#ff5521',votePanel:'#14171c',transitionStyle:'instant'
+});
+export const themeKeys=Object.keys(themeDefaults);
+export const themeGroups={tvAppearance:['bg','background'],tvLogo:['logo','logoX','logoY','logoSize'],tvTypography:['font','subtitleFont','color','size','subtitleSize','align','textX','textY','textWidth'],mobileAppearance:['mobileBg','mobileBackground'],mobileLogo:['mobileLogo','mobileLogoX','mobileLogoY','mobileLogoSize'],mobileTypography:['mobileFont','mobileBodyFont','mobileColor','mobileTitleSize','mobileTextSize','mobileAlign','mobileContentY','mobileContentWidth'],voting:['voteAccent','votePanel'],transition:['transitionStyle']};
+const imageKeys=['bg','logo','mobileBg','mobileLogo'],fontKeys=['font','subtitleFont','mobileFont','mobileBodyFont'],colorKeys=['background','color','mobileBackground','mobileColor','voteAccent','votePanel'];
+const ranges={logoX:[0,100],logoY:[0,100],logoSize:[3,70],size:[24,140],subtitleSize:[1,12],textX:[0,100],textY:[0,100],textWidth:[20,100],mobileLogoX:[0,100],mobileLogoY:[0,100],mobileLogoSize:[5,90],mobileTitleSize:[12,48],mobileTextSize:[10,26],mobileContentY:[0,100],mobileContentWidth:[60,100]};
+export function validThemeValue(k,v){if(imageKeys.includes(k))return typeof v==='string'&&v.length<=650000&&(v===''||/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(v));if(fontKeys.includes(k))return typeof v==='string'&&(/^(Georgia|Arial|Verdana|Tahoma|Times|Trebuchet|System|Courier)$/.test(v)||/^custom-[a-z0-9-]{1,80}$/.test(v));if(colorKeys.includes(k))return typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v);if(ranges[k])return typeof v==='number'&&Number.isFinite(v)&&v>=ranges[k][0]&&v<=ranges[k][1];if(k==='align'||k==='mobileAlign')return ['left','center','right'].includes(v);if(k==='transitionStyle')return ['instant','fade','slide'].includes(v);return false;}
+export function normalizeTheme(t){const out={...themeDefaults};for(const k of themeKeys)if(validThemeValue(k,t?.[k]))out[k]=t[k];if(!validThemeValue('subtitleFont',t?.subtitleFont)&&validThemeValue('font',t?.font))out.subtitleFont=t.font;if(!validThemeValue('mobileBodyFont',t?.mobileBodyFont)&&validThemeValue('mobileFont',t?.mobileFont))out.mobileBodyFont=t.mobileFont;return out;}
+export function linkedKeys(s){return Array.isArray(s?.themeInherit)?[...new Set(s.themeInherit.filter(k=>themeKeys.includes(k)))]:[];}
+export function validThemeLinks(s){return s.themeInherit===undefined||(Array.isArray(s.themeInherit)&&s.themeInherit.length<=themeKeys.length&&s.themeInherit.every(k=>themeKeys.includes(k))&&new Set(s.themeInherit).size===s.themeInherit.length);}
+export function resolveSlide(s,t){if(!s)return s;const keys=linkedKeys(s);if(!keys.length)return {...s};const defaults=normalizeTheme(t);return {...s,...Object.fromEntries(keys.map(k=>[k,defaults[k]]))};}
+// Editor only: values are materialised for existing direct manipulation code.
+export function hydrateThemeDeck(d){d.theme=normalizeTheme(d.theme);d.slides=d.slides.map(s=>resolveSlide(s,d.theme));return d;}
+export function detachChanged(s,t){const keys=linkedKeys(s);if(!keys.length)return;const defaults=normalizeTheme(t);s.themeInherit=keys.filter(k=>s[k]===defaults[k]);}
+export function compactSlide(s){const out={...s};for(const k of linkedKeys(s))delete out[k];return out;}
+export function linkSlide(s,t,keys=themeKeys){const allowed=keys.filter(k=>themeKeys.includes(k));s.themeInherit=[...new Set([...linkedKeys(s),...allowed])];Object.assign(s,resolveSlide(s,t));return s;}
+export function newThemedSlide(type,t){const s=linkSlide({type},t);if(type==='join'){s.themeInherit=s.themeInherit.filter(k=>k!=='textY');s.textY=17;}return s;}
+export function changeTheme(d,t,all=false){for(const s of d.slides)detachChanged(s,d.theme);d.theme=normalizeTheme(t);for(const s of d.slides){if(all){const qrY=s.textY??17;linkSlide(s,d.theme,s.type==='join'?themeKeys.filter(k=>k!=='textY'):themeKeys);if(s.type==='join'){s.themeInherit=linkedKeys(s).filter(k=>k!=='textY');s.textY=qrY;}}else Object.assign(s,resolveSlide(s,d.theme));}return d;}
