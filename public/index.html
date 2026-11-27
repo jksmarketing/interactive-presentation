@@ -135,4 +135,34 @@ body.controller:not(.tv):not(.audience) .app-header{margin:0;padding:8px 12px;bo
 .participant-screen .fit-group-summary>span{font-size:min(4.6cqw,3.4cqh)}
 .participant-screen .fit-distribution-column{font-size:min(4cqw,3cqh)}
 .round-result-status{display:grid;gap:4px;text-align:left;padding:9px;border:1px solid var(--ui-line);border-radius:8px;background:#ff55210b;margin-bottom:10px}.round-result-status small{color:var(--ui-muted)}
-</style></head><body><main id="app"></main><script type="module" src="/app.js?v=3.0.10"></script></body></html>
+
+/* 3.0.11 — presentation-native results. The brand is a separate safe header slot. */
+.slide.results-stage::before{content:'';position:absolute;inset:0;background:var(--result-scrim);z-index:60;pointer-events:none}
+.slide.results-stage>.fit-score-overlay{inset:5% 6% 5%;z-index:65;overflow:hidden}
+.slide.results-stage>.fit-score-overlay>.fit-scoreboard{background:none;border:0;border-radius:0;padding:0;box-shadow:none;color:inherit;grid-template-rows:minmax(0,21%) minmax(0,1fr) auto;gap:1.6cqh}
+.slide.results-stage>.fit-score-overlay>.fit-group-result{grid-template-rows:minmax(0,21%) minmax(0,22%) minmax(0,1fr) auto}
+.slide.results-stage>img{position:absolute;top:5%;left:6%;right:auto;transform:none;width:var(--result-logo-width);height:15%;max-width:16%;max-height:15%;object-fit:contain;object-position:left top;z-index:66}
+.slide.results-stage.result-logo-right>img{left:auto;right:6%;object-position:right top}
+.slide.results-stage.result-has-logo.result-logo-left .fit-score-head{padding-left:21%}
+.slide.results-stage.result-has-logo.result-logo-right .fit-score-head{padding-right:21%}
+.slide.results-stage .fit-score-head>span{font-size:min(1.6cqw,3.2cqh);color:inherit;opacity:.9;letter-spacing:.13em}
+.slide.results-stage .fit-score-head h3{font-family:var(--slide-font);font-size:min(3.7cqw,6.3cqh);color:inherit;text-shadow:var(--slide-text-effect,none);line-height:1.08}
+.slide.results-stage .fit-score-page{gap:1.1cqh}
+.slide.results-stage .fit-score-row{grid-template-columns:4cqw minmax(0,29%) minmax(0,1fr) 13cqw;grid-template-rows:minmax(0,1fr);gap:1.7cqw;padding:0;background:none;border:0;border-radius:0;overflow:hidden}
+.slide.results-stage .fit-score-row.first-place{background:none;border:0}
+.slide.results-stage .fit-rank{grid-column:1;grid-row:1;color:inherit;font-size:min(2.3cqw,4cqh);font-weight:600;opacity:.85}
+.slide.results-stage .fit-score-name{grid-column:2;grid-row:1;display:block;line-height:1.1}
+.slide.results-stage .fit-score-name strong{display:block;font-family:var(--slide-font);font-size:min(2.6cqw,4.3cqh);text-shadow:var(--slide-text-effect,none)}
+.slide.results-stage .fit-score-name small{display:none}
+.slide.results-stage .fit-value{grid-column:4;grid-row:1;font-size:min(2.7cqw,4.6cqh);color:inherit;text-shadow:var(--slide-text-effect,none)}
+.slide.results-stage .fit-score-bar{grid-column:3;grid-row:1;height:58%;max-height:5cqh;border-radius:.35cqh;background:var(--result-track)}
+.slide.results-stage .fit-score-bar i{background:currentColor;opacity:.72;border-radius:.35cqh}
+.slide.results-stage .first-place .fit-score-bar i{opacity:1}
+.slide.results-stage .first-place .fit-rank,.slide.results-stage .first-place .fit-value{font-weight:800;opacity:1}
+.slide.results-stage .fit-score-footer,.slide.results-stage .fit-group-summary>strong,.slide.results-stage .fit-group-summary>span,.slide.results-stage .fit-distribution-column>span{color:inherit}
+.slide.results-stage .fit-distribution-track{background:var(--result-track)}
+.slide.results-stage .fit-distribution-track i{background:currentColor}
+
+.slide.results-stage .fit-score-footer{line-height:1.35}
+.slide.results-stage .fit-group-summary>strong{line-height:1.16;font-size:min(9cqw,16cqh)}
+</style></head><body><main id="app"></main><script type="module" src="/app.js?v=3.0.11"></script></body></html>

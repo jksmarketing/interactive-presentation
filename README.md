@@ -101,3 +101,6 @@ See [V3.0.9-TEXT-EFFECTS.md](V3.0.9-TEXT-EFFECTS.md) for controls and verificati
 The TV, participant and live-control previews use a bounded results layout. Both competition reveal and dedicated results slides show the same ranking format. Eight groups fit on each page; longer rankings rotate every eight seconds. Group ratings are shown automatically after voting closes, including timed closure, with the average, response count and distribution. Use **Hide group result**, start the next group, or reveal final results to leave this view. The final leaderboard remains an explicit reveal. Groups with no votes have no rank or score. No individual voter IDs are sent in the group result.
 
 See [V3.0.10-RESULTS.md](V3.0.10-RESULTS.md) for verification and limitations.
+
+## V3.0.11
+Presentation-native TV results with a reserved branding header. See V3.0.11-RESULTS-DESIGN.md.
