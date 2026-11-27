@@ -22,3 +22,12 @@ const blank=await ok('library',{title:'Blank'});const blankState=await ok('state
 const malformed=structuredClone(exported);malformed.slides[0].themeInherit=['unknown'];assert.equal((await req('library',{deck:malformed,title:'Invalid'})).status,400);assert.equal(normalizeTheme({color:'bad',voteAccent:'<script>'}).color,'#f5d69a');assert.equal(normalizeTheme({logoX:999}).logoX,85);
 const qr=newThemedSlide('join',deck.theme);assert.equal(qr.textY,17);assert.ok(!qr.themeInherit.includes('textY'));assert.equal(resolveSlide(qr,deck.theme).logo,logo);
 console.log('Theme checks passed: all design categories, legacy preservation, new-slide inheritance, field override, relinking, compact storage, public resolution, reload, duplication, import/export, new deck, invalid links, QR default placement.');
+
+// Text effects: both devices, stored theme, individual override, and public resolution.
+deck=hydrateThemeDeck(structuredClone(await ok('state')));const target=deck.slides.at(-1);linkSlide(target,deck.theme,[...themeGroups.tvTypography,...themeGroups.mobileTypography]);
+changeTheme(deck,{...deck.theme,textEffect:'shadow',textEffectColor:'#123456',textEffectOpacity:85,textEffectBlur:18,textEffectX:-4,textEffectY:9,mobileTextEffect:'glow',mobileTextEffectColor:'#ffffff',mobileTextEffectBlur:25});
+assert.equal(target.textEffect,'shadow');assert.equal(target.mobileTextEffect,'glow');target.textEffectOpacity=40;detachChanged(target,deck.theme);changeTheme(deck,{...deck.theme,textEffectOpacity:90});assert.equal(target.textEffectOpacity,40);assert.equal(target.textEffectBlur,18);
+state=await ok('edit',backup());assert.equal(state.slides.at(-1).textEffectOpacity,40);assert.equal(state.slides.at(-1).mobileTextEffect,'glow');pub=await ok('state',undefined,false);assert.equal(pub.slides.at(-1).textEffectColor,'#123456');assert.equal(pub.slides.at(-1).textEffectX,-4);assert.equal((await ok('export')).theme.textEffectOpacity,90);
+const bad=await ok('export');bad.slides.at(-1).textEffectBlur=999;assert.equal((await req('library',{deck:bad,title:'Bad effects'})).status,400);assert.equal(normalizeTheme({textEffect:'invalid',mobileTextEffectColor:'red'}).textEffect,'none');
+const fresh=new EventRoom({storage:rooms.get('main').ctx.storage,getWebSockets:()=>[]},env);rooms.set('main',fresh);assert.equal((await ok('state')).slides.at(-1).textEffectOpacity,40);
+console.log('Text effects persistence, validation, independent devices, theme inheritance, individual override and reload checks passed.');

@@ -1,9 +1,9 @@
 
-> interactive-presentation@3.0.7 test
+> interactive-presentation@3.0.9 test
 > npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs && node tests/participant.mjs && node tests/theme.mjs && node tests/phone-modes.mjs && node tests/multi-competition.mjs && node tests/early-voting.mjs
 
 
-> interactive-presentation@3.0.7 check
+> interactive-presentation@3.0.9 check
 > node --check worker.js && node --check public/app.js && node --check public/qr.js && node --check public/presentation-theme.js
 
 Library authentication, creation, rename, isolation, and legacy session checks passed.
@@ -15,9 +15,12 @@ Static rendering checks passed for admin (TV/mobile), control, TV, join and libr
 Gallery and theme inspector static markup checks passed.
 Gallery action checks passed: selected card creates a themed poll; Change type retains the slide ID and produces a QR slide. Dialog interaction simulated.
 Independent phone editor and controller markup checks passed.
+Text effect controls and TV/phone rendering checks passed.
 Participant checks passed: custom mobile design, phase rendering, disabled/duplicate/stale submission, saved receipt, next group, offline/recovery, failed vote, activity scoping and shared preview. VM DOM stubs, not real browser.
 Independent phone mode checks passed: waiting, QR sharing, automatic join, finished, custom content, persistent end priority, TV source and active competition/activity precedence.
 Theme checks passed: all design categories, legacy preservation, new-slide inheritance, field override, relinking, compact storage, public resolution, reload, duplication, import/export, new deck, invalid links, QR default placement.
+Text effects persistence, validation, independent devices, theme inheritance, individual override and reload checks passed.
 Phone-mode backend tests passed: legacy defaults, persistence, validation, public state, independent TV slide type, authentication, new presentation isolation, closing and reopening, active-round protection.
 Multi-competition checks passed: independent rosters and scale, overlapping group IDs, stale action, separate publication on two screens, explicit source, public privacy, reload, scoped reset, and copy ID remapping.
 Early voting checks passed: authorization, stale and wrong-round guards, running/paused countdowns, vote acceptance, alarm replacement, automatic closure and normal expiry.
+Chromium text effects: editor control visibility, colour, numeric values, live preview, glow, independent phone setting, theme editor and TV computed styles passed (mocked API).

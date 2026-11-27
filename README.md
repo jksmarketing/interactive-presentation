@@ -91,3 +91,7 @@ See [PARTICIPANT-UPDATE.md](PARTICIPANT-UPDATE.md) for the changes, verification
 
 ## V3.0.7
 Competition rating endpoints are numbered. During a running or paused countdown, Live control offers **Open voting now**, with a group-specific confirmation. See V3.0.7-CHANGES.md.
+
+## V3.0.9 – Text effects
+
+See [V3.0.9-TEXT-EFFECTS.md](V3.0.9-TEXT-EFFECTS.md) for controls and verification. Run `python tests/text-effects-dom.py` for the focused Chromium tests (requires Playwright and Chromium).
