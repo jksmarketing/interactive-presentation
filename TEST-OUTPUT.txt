@@ -1,9 +1,9 @@
 
-> interactive-presentation@3.0.9 test
-> npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs && node tests/participant.mjs && node tests/theme.mjs && node tests/phone-modes.mjs && node tests/multi-competition.mjs && node tests/early-voting.mjs
+> interactive-presentation@3.0.10 test
+> npm run check && node tests/library.mjs && node tests/navigation.mjs && node tests/upgrade.mjs && node tests/activities.mjs && node tests/migration.mjs && node tests/render.mjs && node tests/participant.mjs && node tests/theme.mjs && node tests/phone-modes.mjs && node tests/multi-competition.mjs && node tests/early-voting.mjs && node tests/round-results.mjs
 
 
-> interactive-presentation@3.0.9 check
+> interactive-presentation@3.0.10 check
 > node --check worker.js && node --check public/app.js && node --check public/qr.js && node --check public/presentation-theme.js
 
 Library authentication, creation, rename, isolation, and legacy session checks passed.
@@ -23,4 +23,7 @@ Text effects persistence, validation, independent devices, theme inheritance, in
 Phone-mode backend tests passed: legacy defaults, persistence, validation, public state, independent TV slide type, authentication, new presentation isolation, closing and reopening, active-round protection.
 Multi-competition checks passed: independent rosters and scale, overlapping group IDs, stale action, separate publication on two screens, explicit source, public privacy, reload, scoped reset, and copy ID remapping.
 Early voting checks passed: authorization, stale and wrong-round guards, running/paused countdowns, vote acceptance, alarm replacement, automatic closure and normal expiry.
+Group results: private until close, aggregate distribution, persistence, no votes, automatic close, dismiss, next round, competition switching and scoped reset passed.
+43 Chromium result layout checks passed across actual TV, participant and controller views; automatic paging verified.
+Chromium offline DOM: 36 mobile layouts at 320/390/430 px, non-overlap, no horizontal overflow, QR size, 10-point rating, real selection and confirmation, word cloud / Q&A input and mocked submissions, plus explicit result selector, publish confirmation and private score overview, editor roster isolation and result linking passed.
 Chromium text effects: editor control visibility, colour, numeric values, live preview, glow, independent phone setting, theme editor and TV computed styles passed (mocked API).

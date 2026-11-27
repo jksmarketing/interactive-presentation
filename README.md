@@ -95,3 +95,9 @@ Competition rating endpoints are numbered. During a running or paused countdown,
 ## V3.0.9 – Text effects
 
 See [V3.0.9-TEXT-EFFECTS.md](V3.0.9-TEXT-EFFECTS.md) for controls and verification. Run `python tests/text-effects-dom.py` for the focused Chromium tests (requires Playwright and Chromium).
+
+## V3.0.10 – Responsive scoreboards and immediate group results
+
+The TV, participant and live-control previews use a bounded results layout. Both competition reveal and dedicated results slides show the same ranking format. Eight groups fit on each page; longer rankings rotate every eight seconds. Group ratings are shown automatically after voting closes, including timed closure, with the average, response count and distribution. Use **Hide group result**, start the next group, or reveal final results to leave this view. The final leaderboard remains an explicit reveal. Groups with no votes have no rank or score. No individual voter IDs are sent in the group result.
+
+See [V3.0.10-RESULTS.md](V3.0.10-RESULTS.md) for verification and limitations.
